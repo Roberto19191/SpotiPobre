@@ -5,15 +5,17 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         System.out.println("Sejam bem vindos ao nosso streaming de música.\r\n"+  
         "SpotiPobre.");
-        System.out.println( "Informe a opção desejada:/s/r"+
-                            "1-Realizar login./s/r"+
-                            "2-Mídias./s/r"+
-                            "3-Playlists./s/r"+
-                            "4-Gênreo musical./s/r"+
-                            "5-Catálogo./s/r"+
+        System.out.println( "O que deseja?\r\n"+
+                            "1-Realizar login.\r\n"+
+                            "2-Mídias.\r\n"+
+                            "3-Playlists.\r\n"+
+                            "4-Gênreo musical.\r\n"+
+                            "5-Catálogo.\r\n"+
                             "6-Sair.");
-        int opcao = sc.nextInt();
-        while (opcao>0 && opcao<=6) {
+        while (true) {
+            System.out.print("Digite a opção desejada: ");             
+            int opcao = sc.nextInt();
+            sc.nextLine();
             switch (opcao) {
                 case 1:
                     System.out.println("caso1");
@@ -38,13 +40,12 @@ public class Main {
                 
                 case 6:
                     System.out.println("caso6");
-                    break;
+                    return;
                 
                 default:
                     System.out.println("Tá errado aí viss");
                     break;
             }
         } 
-        sc.nextLine();
     }
 }
