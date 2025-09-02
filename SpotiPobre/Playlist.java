@@ -1,15 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
-import excecoes.NomeInvalidoException;
 
 public class Playlist {
-    public final String nome;
-    public final List<Midia> midias;
+    public String nome;
+    public List<Midia> midias;
 
-    public Playlist(String nome) throws NomeInvalidoException {
-        if (nome == null || nome.isEmpty()) {
-            throw new NomeInvalidoException("O nome da playlist não pode ser vazio");
-        }
+    public Playlist(String nome) {
         this.nome = nome;
         this.midias = new ArrayList<>();
     }
@@ -19,10 +15,8 @@ public class Playlist {
     }
 
     public void adicionarMidia(Midia m) {
-        if (m != null) {
-            midias.add(m);
-            System.out.println("Mídia '" + m.getTitulo() + "' adicionada à playlist '" + nome + "'.");
-        }
+        midias.add(m);
+        System.out.println("Mídia '" + m.getTitulo() + "' adicionada à playlist '" + nome + "'.");
     }
 
     public void removerMidia(Midia m) {
@@ -30,22 +24,40 @@ public class Playlist {
             midias.remove(m);
             System.out.println("Mídia '" + m.getTitulo() + "' removida da playlist '" + nome + "'.");
         } else {
-            System.out.println("Mídia não encontrada na playlist '" + nome + "'.");
+            System.out.println("Mídia não encontrada na playlist.");
         }
     }
 
     public void exibirMidias() {
-        if (midias.isEmpty()) {
-            System.out.println("Playlist '" + nome + "' vazia.");
+        if (midias.size() == 0) {
+            System.out.println("Playlist vazia.");
         } else {
             System.out.println("Mídias da playlist '" + nome + "':");
-            for (int i = 0; i < midias.size(); i++) {
-                System.out.println((i + 1) + ". " + midias.get(i));
+            for (Midia m : midias) {
+                System.out.println("- " + m);
             }
         }
     }
+}
 
-    public int totalMidias() {
-        return midias.size();
+public Midia buscarportitulo(string titulo) {
+    for (Midia m : midias) {
+        if (m.getTitulo().equalsIgnoreCase(titulo)) {
+            System.out.println("Mídia encotrada: " + m);
+            return m;
+        }
     }
+ System.out.println("Nenhuma Mídia com o título" + titulo + "encontrada na Playlist. ");
+    return null;
+}
+
+public void ordenarportitulo() {
+    midias.sort(comparator.comparing(Midia::getTitulo, String.CASE_INSENSITIVE_ORDER));
+    System.out.println("Playlist " + nome + " ordenada por titulo.");
+}
+
+public void ordenarporDuracao() {
+    midias.sort(comparator.comparingDouble(Midia::getDuracao));
+    System.out.println("Playlist " + nome + " ordenada por duração.");
+}
 }
