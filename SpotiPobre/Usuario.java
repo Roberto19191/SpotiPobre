@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import excecoes.DuracaoInvalidaException;
+import excecoes.NomeInvalidoException;
+import excecoes.TipoMidiaInvalidoException;
 
 public class Usuario {
     public String nome;
@@ -14,14 +17,29 @@ public class Usuario {
     }
 
     public static Usuario cadastrarUsuario(Scanner sc) {
-        System.out.print("Digite seu nome: ");
-        String nome = sc.nextLine();
-        System.out.print("Digite seu e-mail: ");
-        String email = sc.nextLine();
+        String nome;
+        do {
+            System.out.print("Digite seu nome: ");
+            nome = sc.nextLine().trim();
+            if (nome.isEmpty()) {
+                System.out.println("Nome inválido! Tente novamente.");
+            }
+        } while (nome.isEmpty());
+
+        String email;
+        do {
+            System.out.print("Digite seu e-mail: ");
+            email = sc.nextLine().trim();
+            if (email.isEmpty()) {
+                System.out.println("E-mail inválido! Tente novamente.");
+            }
+        } while (email.isEmpty());
+
         Usuario usuario = new Usuario(nome, email);
         System.out.println("Usuário " + nome + " cadastrado!");
         return usuario;
     }
+
 
     public void criarPlaylistMenu(Scanner sc) {
         System.out.print("Digite o nome da playlist: ");
@@ -29,25 +47,42 @@ public class Usuario {
         criarPlaylist(nomePlaylist);
     }
 
-    public void adicionarMidiaMenu(Scanner sc) {
-        System.out.print("Digite o nome da playlist: ");
-        String nomePlaylist = sc.nextLine();
 
+    public void adicionarMidiaMenu(Scanner sc) {
         System.out.print("Digite o título da mídia: ");
         String titulo = sc.nextLine();
         System.out.print("Digite o artista: ");
         String artista = sc.nextLine();
-        System.out.print("Digite a duração (minutos): ");
-        double duracao = sc.nextDouble();
-        sc.nextLine();
+        System.out.print("Digite a duração (mm:ss): ");
+        String duracaoStr = sc.nextLine();
         System.out.print("Digite o gênero: ");
         String genero = sc.nextLine();
-        System.out.print("Digite o tipo (Música, Podcast, Audiobook): ");
+        System.out.print("Digite o tipo (Musica, Podcast, Audiobook): ");
         String tipo = sc.nextLine();
 
-        Midia m = new Midia(titulo, artista, duracao, genero, tipo);
-        adicionarMidiaEmPlaylist(nomePlaylist, m);
+        try {
+            double duracao = converterDuracao(duracaoStr);
+            Midia m = new Midia(titulo, artista, duracao, genero, tipo);
+
+            System.out.print("Deseja adicionar esta mídia a alguma playlist? (s/n) ");
+            String resposta = sc.nextLine();
+            if (resposta.equalsIgnoreCase("s")) {
+                System.out.print("Digite o nome da playlist: ");
+                String nomePlaylistAdd = sc.nextLine();
+                try {
+                    adicionarMidiaEmPlaylist(nomePlaylistAdd, m);
+                } catch (NomeInvalidoException e) {
+                    System.out.println("Erro: " + e.getMessage());
+                }
+            }
+
+            System.out.println("Mídia adicionada ao catálogo com sucesso!");
+
+        } catch (NomeInvalidoException | TipoMidiaInvalidoException | DuracaoInvalidaException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
     }
+
 
     public void exibirPlaylistsMenu() {
         exibirPlaylists();
@@ -57,12 +92,16 @@ public class Usuario {
     }
 
     public void criarPlaylist(String nomePlaylist) {
-        Playlist playlist = new Playlist(nomePlaylist);
-        playlists.add(playlist);
-        System.out.println("Playlist '" + nomePlaylist + "' criada!");
+        try {
+            Playlist playlist = new Playlist(nomePlaylist);
+            playlists.add(playlist);
+            System.out.println("Playlist '" + nomePlaylist + "' criada!");
+        } catch (NomeInvalidoException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
     }
 
-    public void removerPlaylist(String nomePlaylist) {
+    public void removerPlaylist(String nomePlaylist) throws NomeInvalidoException {
         Playlist encontrada = null;
         for (Playlist p : playlists) {
             if (p.nome.equalsIgnoreCase(nomePlaylist)) {
@@ -74,22 +113,30 @@ public class Usuario {
             playlists.remove(encontrada);
             System.out.println("Playlist '" + nomePlaylist + "' removida!");
         } else {
-            System.out.println("Playlist não encontrada.");
+            throw new NomeInvalidoException("Playlist não encontrada.");
         }
     }
 
     public void exibirPlaylists() {
-        if (playlists.size() == 0) {
+        if (playlists.isEmpty()) {
             System.out.println("Nenhuma playlist criada.");
         } else {
             System.out.println("Playlists de " + nome + ":");
             for (Playlist p : playlists) {
                 System.out.println("- " + p.nome);
+                if (p.midias.isEmpty()) {
+                    System.out.println("  (Sem mídias)");
+                } else {
+                    for (Midia m : p.midias) {
+                        System.out.println("  - " + m);
+                    }
+                }
             }
         }
     }
 
-    public void adicionarMidiaEmPlaylist(String nomePlaylist, Midia m) {
+
+    public void adicionarMidiaEmPlaylist(String nomePlaylist, Midia m) throws NomeInvalidoException {
         Playlist encontrada = null;
         for (Playlist p : playlists) {
             if (p.nome.equalsIgnoreCase(nomePlaylist)) {
@@ -100,11 +147,11 @@ public class Usuario {
         if (encontrada != null) {
             encontrada.adicionarMidia(m);
         } else {
-            System.out.println("Playlist não encontrada.");
+            throw new NomeInvalidoException("Playlist não encontrada: " + nomePlaylist);
         }
     }
 
-    public void removerMidiaDePlaylist(String nomePlaylist, Midia m) {
+    public void removerMidiaDePlaylist(String nomePlaylist, Midia m) throws NomeInvalidoException {
         Playlist encontrada = null;
         for (Playlist p : playlists) {
             if (p.nome.equalsIgnoreCase(nomePlaylist)) {
@@ -115,7 +162,26 @@ public class Usuario {
         if (encontrada != null) {
             encontrada.removerMidia(m);
         } else {
-            System.out.println("Playlist não encontrada.");
+            throw new NomeInvalidoException("Playlist não encontrada: " + nomePlaylist);
+        }
+    }
+
+
+
+    public static double converterDuracao(String duracaoStr) throws DuracaoInvalidaException {
+        try {
+            String[] partes = duracaoStr.split(":");
+            if (partes.length != 2) {
+                throw new DuracaoInvalidaException("Formato inválido. Use mm:ss");
+            }
+            int minutos = Integer.parseInt(partes[0].trim());
+            int segundos = Integer.parseInt(partes[1].trim());
+            if (minutos < 0 || segundos < 0 || segundos >= 60) {
+                throw new DuracaoInvalidaException("Duração inválida");
+            }
+            return minutos + segundos / 60.0;
+        } catch (NumberFormatException e) {
+            throw new DuracaoInvalidaException("Duração deve conter apenas números");
         }
     }
 }

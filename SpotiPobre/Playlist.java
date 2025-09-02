@@ -1,11 +1,15 @@
 import java.util.ArrayList;
 import java.util.List;
+import excecoes.NomeInvalidoException;
 
 public class Playlist {
-    public String nome;
-    public List<Midia> midias;
+    public final String nome;
+    public final List<Midia> midias;
 
-    public Playlist(String nome) {
+    public Playlist(String nome) throws NomeInvalidoException {
+        if (nome == null || nome.isEmpty()) {
+            throw new NomeInvalidoException("O nome da playlist não pode ser vazio");
+        }
         this.nome = nome;
         this.midias = new ArrayList<>();
     }
@@ -15,8 +19,10 @@ public class Playlist {
     }
 
     public void adicionarMidia(Midia m) {
-        midias.add(m);
-        System.out.println("Mídia '" + m.getTitulo() + "' adicionada à playlist '" + nome + "'.");
+        if (m != null) {
+            midias.add(m);
+            System.out.println("Mídia '" + m.getTitulo() + "' adicionada à playlist '" + nome + "'.");
+        }
     }
 
     public void removerMidia(Midia m) {
@@ -24,18 +30,22 @@ public class Playlist {
             midias.remove(m);
             System.out.println("Mídia '" + m.getTitulo() + "' removida da playlist '" + nome + "'.");
         } else {
-            System.out.println("Mídia não encontrada na playlist.");
+            System.out.println("Mídia não encontrada na playlist '" + nome + "'.");
         }
     }
 
     public void exibirMidias() {
-        if (midias.size() == 0) {
-            System.out.println("Playlist vazia.");
+        if (midias.isEmpty()) {
+            System.out.println("Playlist '" + nome + "' vazia.");
         } else {
             System.out.println("Mídias da playlist '" + nome + "':");
-            for (Midia m : midias) {
-                System.out.println("- " + m);
+            for (int i = 0; i < midias.size(); i++) {
+                System.out.println((i + 1) + ". " + midias.get(i));
             }
         }
+    }
+
+    public int totalMidias() {
+        return midias.size();
     }
 }
