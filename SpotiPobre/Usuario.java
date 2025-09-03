@@ -49,37 +49,26 @@ public class Usuario {
 
 
     public void adicionarMidiaMenu(Scanner sc) {
-        System.out.print("Digite o título da mídia: ");
+        System.out.print("Título: ");
         String titulo = sc.nextLine();
-        System.out.print("Digite o artista: ");
+
+        System.out.print("Artista: ");
         String artista = sc.nextLine();
-        System.out.print("Digite a duração (mm:ss): ");
-        String duracaoStr = sc.nextLine();
-        System.out.print("Digite o gênero: ");
-        String genero = sc.nextLine();
-        System.out.print("Digite o tipo (Musica, Podcast, Audiobook): ");
+
+        System.out.print("Duração (em minutos, ex: 3.5): ");
+        double duracao = Double.parseDouble(sc.nextLine());
+
+        // Pede o gênero usando o Enum
+        Genero genero = Genero.escolherGenero(sc);
+
+        System.out.print("Tipo (Musica, Podcast ou Audiobook): ");
         String tipo = sc.nextLine();
 
         try {
-            double duracao = converterDuracao(duracaoStr);
-            Midia m = new Midia(titulo, artista, duracao, genero, tipo);
-
-            System.out.print("Deseja adicionar esta mídia a alguma playlist? (s/n) ");
-            String resposta = sc.nextLine();
-            if (resposta.equalsIgnoreCase("s")) {
-                System.out.print("Digite o nome da playlist: ");
-                String nomePlaylistAdd = sc.nextLine();
-                try {
-                    adicionarMidiaEmPlaylist(nomePlaylistAdd, m);
-                } catch (NomeInvalidoException e) {
-                    System.out.println("Erro: " + e.getMessage());
-                }
-            }
-
-            System.out.println("Mídia adicionada ao catálogo com sucesso!");
-
-        } catch (NomeInvalidoException | TipoMidiaInvalidoException | DuracaoInvalidaException e) {
-            System.out.println("Erro: " + e.getMessage());
+            new Midia(titulo, artista, duracao, genero.name(), tipo);
+            System.out.println("Mídia adicionada com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Erro ao adicionar mídia: " + e.getMessage());
         }
     }
 
