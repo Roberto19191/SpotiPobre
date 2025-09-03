@@ -80,7 +80,7 @@ public class Main {
                     break;
 
                 case 8:
-                    Midia.PesquisarMidia(sc);
+                    Pesquisa.PesquisarMidia(sc);
                     break;
 
                 case 0:
@@ -96,3 +96,4 @@ public class Main {
         sc.close();
     }
 }
+
