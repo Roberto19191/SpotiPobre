@@ -18,6 +18,7 @@ public class Main {
             System.out.println("5. Remover playlist");
             System.out.println("6. Remover mídia de playlist");
             System.out.println("7. Listar apenas playlists");
+            System.out.println("8. Pesquisar Músicas, Artístas ou Gênero");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
             opcao = Integer.parseInt(sc.nextLine());
@@ -74,9 +75,12 @@ public class Main {
                 }
                 break;
 
-
                 case 7:
                     usuario.exibirPlaylists();
+                    break;
+
+                case 8:
+                    Midia.PesquisarMidia(sc);
                     break;
 
                 case 0:
